@@ -1,0 +1,213 @@
+<!-- <div class="alert alert-dark text-center" role="alert">
+    Aplikacja webowa do zarządzania firmą
+</div> -->
+
+<h4 class="text-center">Produkty i Usługi</h4>
+<form class="form-inline my-2 my-lg-0">
+  <!-- <div class="dropdown">
+    <select name="contractor" [(ngModel)]="contractorId" class="custom-select" (click)="closeOptions()" id="validationCustom04" required>
+      <option value="0" selected>Kontrahent</option>
+      <option value="{{contractor.id}}" *ngFor="let contractor of contractors | async">{{ contractor.name }}</option>
+    </select>
+  </div> -->
+  <div>
+    <input class="form-control mr-sm-2" name="search" type="search" (keypress)="closeOptions()" placeholder="Kontrahent" [(ngModel)]="searchContractor" aria-label="Search">    
+  </div> 
+    <!-- <div class="dropdown">
+      <select name="category" [(ngModel)]="categoryId" class="custom-select" (click)="closeOptions()" id="validationCustom04" required>
+        <option value="0" selected>Kategoria</option>
+        <option value="{{category.id}}" *ngFor="let category of categories | async">{{ category.name }}</option>
+      </select>
+    </div> -->
+    <div>
+      <input class="form-control mr-sm-2" name="search" type="search" (keypress)="closeOptions()" placeholder="Szukaj" [(ngModel)]="searchFrase" aria-label="Search">    
+    </div>  
+</form>
+<table class="table" *ngIf="products" id="products">
+    <thead>
+      <tr >
+        <th scope="col">#</th>
+        <th scope="col">Nazwa</th>
+        <th scope="col">Typ</th>
+        <th scope="col">Cena / Stawka godzinowa</th>
+        <th scope="col">Stawka Vat</th>
+        <th></th>
+        <th>Lista</th>
+      </tr>
+    </thead>
+    <tbody *ngFor="let product of products | async; let i = index">
+      <tr class="product" *ngIf="filterByCategory(product) && filterByName(product) && filterByContractor(product.id)">
+        <th scope="row">{{ i+1 }}</th>
+        <td>{{ product.name }}</td>
+        <td>{{ product.type == 1 ? 'Produkt' : 'Usługa'}}</td>
+        <td>{{ product.price }} zł</td>
+        <td>{{ product.VAT }}%</td>
+        <td><button class="btn btn-outline-info" (click)="showEditing(product.id)">Edytuj</button></td>
+        <td><button class="btn btn-light" (click)="addProductToGroup(product)"><b>+</b></button></td>
+      </tr>
+      
+      
+      
+      <tr *ngIf="editing && productId == product.id">
+        <td></td>
+        <td>
+          Nazwa: <input [(ngModel)]="form.name" name="name" type="text" class="form-control" placeholder="{{ product.name }}" required>
+        </td>
+        <td>
+          Stawka VAT: 
+          <select [(ngModel)]="form.VAT" name="VAT" class="custom-select" id="validationCustom05" required>
+            <option disabled selected value="">VAT</option>
+            <option value="5">5%</option>
+            <option value="8">8%</option>
+            <option value="23">23%</option>
+          </select>        </td>
+        <td>
+          Cena: <input [(ngModel)]="form.price" name="price" type="number" class="form-control" placeholder="{{ product.price }}" required>
+        </td>
+      </tr>
+      <tr *ngIf="editing && productId == product.id">
+        <td></td>
+        <td> 
+          Kategoria: 
+          <select [(ngModel)]="form.category" name="category" class="custom-select" id="validationCustom04" required>
+            <option disabled selected value="">Kategoria</option>
+            <option value="{{category.id}}" *ngFor="let category of categories | async">{{ category.name }}</option>
+          </select>
+        </td>
+        <td>
+          Jednostka miary: <input [(ngModel)]="form.unit" name="unit" type="text" class="form-control"  required>
+        </td>
+        <td>
+          Typ:
+          <select [(ngModel)]="form.type" name="type" class="custom-select" id="type" required>
+            <option selected disabled value="">Typ</option>
+            <option value="1">Produkt</option>
+            <option value="0">Usługa</option>
+          </select>
+        </td>
+        <td><br><button class="btn btn-outline-success" [disabled]="!checkValid()" (click)="updateProduct(product)">Zapisz</button></td>
+        <td><br><button class="btn btn-outline-danger" (click)="deleteProduct(product)">Usuń</button></td>
+      </tr><br *ngIf="editing && productId == product.id">
+
+
+
+      <tr *ngIf="isSpecial(product.id) && filterByContractor(product.id) && filterByCategory(product) && filterByName(product)">
+        <th colspan="4">
+          <!-- <ul class="list-group list-group-horizontal" >
+            <li class="list-group-item disabled" style="width: 65%">Kontrahent</li>
+            <li class="list-group-item disabled" style="width: 35%">Cena</li>
+          </ul> -->
+          <ul class="list-group list-group-horizontal" *ngFor="let special of specials | async" >
+            <li class="list-group-item" style="width: 32.5%" *ngIf="special.product_id === product.id">{{ getContractorName(special.contractor_id) }}</li>
+            <li class="list-group-item" style="width: 32.5%" *ngIf="special.product_id === product.id">{{ getNIP(special.contractor_id) }}</li>
+            <li class="list-group-item" style="width: 23%" *ngIf="special.product_id === product.id"><input type="number" *ngIf="editSpecial && special.id == specialId" placeholder="{{special.price}}"><i *ngIf="!editSpecial || special.id != specialId">{{ special.price  }} zł </i></li>
+            <!-- <li class="list-group-item" style="width: 12%" *ngIf="special.product_id === product.id"><button class="btn btn-outline-info" (click)="showEditSpecial(special)" >Edytuj</button></li> -->
+          </ul>
+        </th>
+        <!-- <th>
+          <button class="btn btn-outline-info">Określ cenę dla kontrahenta</button>
+        </th> -->
+      </tr>
+
+
+    </tbody>
+  </table>
+  <button class="btn btn-outline-success float-right" (click)="showAddingPanel()" id="addingButton">{{ addingButton }}</button>
+  <button class="btn btn-primary float-right" (click)="showAddingSpecials()">Przypisz inną cenę kontrahentowi</button>
+  <!-- <button class="btn btn-outline-primary float-right">Wyexportuj jako JSON </button> -->
+  <button class="btn btn-outline-primary">Zapisz jako PDF</button>
+
+<div class="add_product_container" *ngIf="addProduct">
+  <h4 class="text-center">Dodawanie produktu lub usługi</h4>
+  <form #addingForm=ngForm (ngSubmit)="saveToDatabase()">
+    
+      <div class="form-row">
+        <div class="col-md-6 mb-3">
+          <input [(ngModel)]="form.name" name="name"  type="text" class="form-control" id="name" placeholder="Nazwa" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <input [(ngModel)]="form.unit" name="price" class="form-control" type="text" id="validationCustom09" placeholder="Jednostka miary" required>
+        </div>
+        
+      </div>
+    
+    
+      <div class="form-row">
+        <div class="col-md-6 mb-3">
+          <input [(ngModel)]="form.price" name="price" class="form-control" type="number" id="validationCustom03" placeholder="Cena" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <select [(ngModel)]="form.type" name="type" class="custom-select" id="type" required>
+            <option selected disabled value="">Typ</option>
+            <option value="1">Produkt</option>
+            <option value="0">Usługa</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-md-6 mb-3">
+          <select [(ngModel)]="form.category" name="category" class="custom-select" id="validationCustom04" required>
+            <option disabled selected value="">Kategoria</option>
+            <option value="{{category.id}}" *ngFor="let category of categories | async">{{ category.name }}</option>
+          </select>
+        </div>
+      
+        <div class="col-md-6 mb-3">
+          <select [(ngModel)]="form.VAT" name="VAT" class="custom-select" id="validationCustom05" required>
+            <option disabled selected value="">VAT</option>
+            <option value="5">5%</option>
+            <option value="8">8%</option>
+            <option value="23">23%</option>
+          </select>
+        </div>
+      </div>
+      
+    
+    <hr>
+    <button class="btn btn-primary float-right" type="submit" [disabled]="!addingForm.valid">Dodaj</button>
+  </form>
+</div>
+  
+  
+
+  <div class="add_product_container" *ngIf="addSpecial">
+    <h4 class="text-center">Wprowadź dane</h4>
+    <form #addingForm=ngForm (ngSubmit)="saveSpecialToDatabase()">
+    
+      
+        <div class="form-row">
+          <div class="col-md-6 mb-3">
+            <input [(ngModel)]="formSpec.price" name="price" class="form-control" type="number" id="validationCustom03" placeholder="Cena" required>
+          </div>
+          
+        </div>
+        <div class="form-row">
+          <div class="col-md-6 mb-3">
+            <select [(ngModel)]="formSpec.contractor_id" name="contractor_id" class="custom-select" id="validationCustom04" required>
+              <option disabled selected value="">Kontrahent</option>
+              <option *ngFor="let contractor of contractors | async" value="{{ contractor.kontrahentID}}">{{ contractor.nazwaFirmy }}</option>
+            </select>
+          </div>
+        
+          <div class="col-md-6 mb-3">
+            <select [(ngModel)]="formSpec.product_id" name="product_id" class="custom-select" id="validationCustom05" required>
+              <option disabled selected value="">Produkt</option>
+              <option  *ngFor="let product of products | async" value="{{ product.id }}" >{{ product.name }}</option>
+            </select>
+          </div>
+        </div>
+        
+      
+      <hr>
+      <button class="btn btn-primary float-right" type="submit" [disabled]="!addingForm.valid">Zapisz</button>
+    </form>
+  </div>
+
+<hr>
+<div class="group" *ngIf="productsGroup.length > 0">
+  <h6 class="text-center"> <button class="btn btn-light float-right" (click)="clearGroup()"><b>x</b></button></h6>
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let product of productsGroup">{{ product.name }} <button class="btn btn-danger float-right" (click)="removeProductFromGroup(product)"><b>x</b></button></li>
+  </ul>
+  <button class="btn btn-outline-info float-right" (click)="downloadAsJSON()">Pobierz</button>
+</div>

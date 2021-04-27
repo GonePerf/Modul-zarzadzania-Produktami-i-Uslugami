@@ -1,0 +1,18 @@
+﻿[
+    {
+        "id": 1,
+        "name": "Cisowianka",
+        "type": true,
+        "VAT": 22,
+        "price": 2.35,
+        "category": "Produkty spożywcze"
+    },
+        {
+        "id": 2,
+        "name": "Wysowianka",
+        "type": true,
+        "VAT": 22,
+        "price": 2.50,
+        "category": "Produkty spożywcze"
+    }
+]

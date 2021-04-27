@@ -1,0 +1,21 @@
+a{
+    padding: 10px;
+    border-radius: 5px;
+    transition: 0.4s;
+}
+a:hover{
+    background-color: black;
+    color: white !important;
+    transition: 0.5s;
+}
+nav{
+    background-image: url(https://wallpaperaccess.com/full/260164.jpg);
+    background-position: center;
+    -webkit-box-shadow: 0 8px 6px -6px black;
+	   -moz-box-shadow: 0 8px 6px -6px black;
+            box-shadow: 0 8px 6px -6px black;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1;
+}
